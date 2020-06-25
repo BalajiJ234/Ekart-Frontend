@@ -29,7 +29,8 @@ const Checkout = ({ products }) => {
         getBraintreeClientToken(userId, token).then(data => {
             if (data.error) {
                 setData({ ...data, error: data.error });
-            } else {
+            } 
+            else {
                 setData({ clientToken: data.clientToken });
             }
         });
@@ -66,47 +67,51 @@ const Checkout = ({ products }) => {
         // send the nonce to your server
         // nonce = data.instance.requestPaymentMethod()
         let nonce;
-        let getNonce = data.instance
-            .requestPaymentMethod()
-            .then(data => {
-                // console.log(data);
-                nonce = data.nonce;
-                // once you have nonce (card type, card number) send nonce as 'paymentMethodNonce'
-                // and also total to be charged
-                // console.log(
-                //     "send nonce and total to process: ",
-                //     nonce,
-                //     getTotal(products)
-                // );
-                const paymentData = {
-                    paymentMethodNonce: nonce,
-                    amount: getTotal(products)
-                };
-
-                processPayment(userId, token, paymentData)
-                    .then(response => {
-                        console.log(response);
-                        // empty cart
-                        // create order
-
-                        const createOrderData = {
-                            products: products,
-                            transaction_id: response.transaction.id,
-                            amount: response.transaction.amount,
-                            address: deliveryAddress
+        let getNonce = data.instance.requestPaymentMethod()
+                        .then(res => {
+                        // console.log(data);
+                        nonce = res.nonce;
+                        // once you have nonce (card type, card number) send nonce as 'paymentMethodNonce'
+                        // and also total to be charged
+                        // console.log(
+                        //     "send nonce and total to process: ",
+                        //     nonce,
+                        //     getTotal(products)
+                        // );
+                        const paymentData = {
+                            paymentMethodNonce: nonce,
+                            amount: getTotal(products)
                         };
 
-                        createOrder(userId, token, createOrderData)
+                        processPayment(userId, token, paymentData)
                             .then(response => {
-                                emptyCart(() => {
-                                    console.log(
-                                        "payment success and empty cart"
-                                    );
-                                    setData({
-                                        loading: false,
-                                        success: true
+                                console.log(response);
+                                // empty cart
+                                // create order
+
+                                const createOrderData = {
+                                    products: products,
+                                    transaction_id: response.transaction.id,
+                                    amount: response.transaction.amount,
+                                    address: deliveryAddress
+                                };
+
+                                createOrder(userId, token, createOrderData)
+                                    .then(response => {
+                                        emptyCart(() => {
+                                            console.log(
+                                                "payment success and empty cart"
+                                            );
+                                            setData({
+                                                loading: false,
+                                                success: true
+                                            });
+                                        });
+                                    })
+                                    .catch(error => {
+                                        console.log(error);
+                                        setData({ loading: false });
                                     });
-                                });
                             })
                             .catch(error => {
                                 console.log(error);
@@ -114,15 +119,10 @@ const Checkout = ({ products }) => {
                             });
                     })
                     .catch(error => {
-                        console.log(error);
-                        setData({ loading: false });
+                        // console.log("dropin error: ", error);
+                        setData({ ...data, error: error.message });
                     });
-            })
-            .catch(error => {
-                // console.log("dropin error: ", error);
-                setData({ ...data, error: error.message });
-            });
-    };
+            };
 
     const showDropIn = () => (
         <div onBlur={() => setData({ ...data, error: "" })}>
@@ -178,7 +178,7 @@ const Checkout = ({ products }) => {
 
     return (
         <div>
-            <h2>Total: ${getTotal()}</h2>
+            <h2>Total: INR.{getTotal()}</h2>
             {showLoading(data.loading)}
             {showSuccess(data.success)}
             {showError(data.error)}
