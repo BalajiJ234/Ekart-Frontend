@@ -3,7 +3,7 @@ import Layout from '../core/Layout';
 import { isAuthenticated } from '../auth';
 import { Link } from 'react-router-dom';
 
-import '../styles.css';
+import '../styles.scss';
 
 const AdminDashboard = () => {
 	const {

@@ -4,7 +4,7 @@ import ShowImage from './ShowImage';
 import moment from 'moment';
 import { addItem, updateItem, removeItem } from './cartHelpers';
 
-import '../styles.css';
+import '../styles.scss';
 
 const Card = ({
 	product,
